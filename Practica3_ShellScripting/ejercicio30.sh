@@ -20,10 +20,12 @@ else
 	echo "ok"
 
 	# find <directorio> <-modo_de_búsqueda> <criterio_de_búsqueda>
-	for i in $(find . -name "*.exe"); do
+	#for i in $(find . -name "*.exe"); do
+	for i in $(ls *.exe); do
 		echo $i
 		#mv <archivo> <directorio_destino>
-		mv $i $HOME/bin
+		#mv $i $HOME/bin
+		cp $i $HOME/bin
 	done
 fi
 exit 0
