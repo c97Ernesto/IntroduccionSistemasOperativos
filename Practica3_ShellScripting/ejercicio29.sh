@@ -8,8 +8,12 @@ for i in "$(find /home -type f -name "*.doc")"; do
 done
 
 function ver_archivo {
+	if [ $# -ne 1 ]; then
+		echo "Se tiene que ingresar nombre de archivo."
+		return 2
+	fi
 	#con <local> solo será visible dentro de la función
-	local encontrado=1	
+	local encontrado=1
 
 	for archivo in "${archivos[@]}"; do
 		if [ "$archivo" == "$1" ]; then
@@ -19,12 +23,12 @@ function ver_archivo {
 	done
 
 	if [ $encontrado -eq 0 ]; then
-		echo "El archivo se encontró correctamente."		
-		return 1
+		echo "El archivo se encontró correctamente."
 	else
 		echo "Archivo no encontrado"
 		return 5
 	fi
+	return 0
 }
 
 function cantidad_archivos {
@@ -78,14 +82,40 @@ function borrar_archivo {
 				;;
 				*)
 					echo "Opción incorrecta."
-					exit 1
+					return 1
 				;;
 			esac
+			return 0
 		done
 	fi
 }
 
-ver_archivo "/home/ernesto/GitHub/APU_UNLP/4toSemestre/CarpetaPruebShell/archivoPruebaEjercicio29.doc"
-cantidad_archivos
-borrar_archivo "/home/ernesto/GitHub/APU_UNLP/4toSemestre/CarpetaPruebShell/archivoPruebaEjercicio29.doc"
+opciones=("Ver archivos" "Cantidad de archivos" "Borrar archivo" "Salir")
+#MENU
+echo "Eliga un Opción: "
 
+select opcion in "${opciones[@]}"; do
+	case $opcion in 
+		"Ver archivos")
+			echo -n "Ingrese nombre del archivo a ver: "
+			read archivo
+			ver_archivo $archivo
+		;;
+		"Cantidad de archivos")
+			cantidad_archivos
+		;;
+		"Borrar archivo")
+			echo -n "Ingrese nombre del archivo a borrar: "
+			read archivo
+			borrar_archivo $archivo
+		;;
+		"Salir")
+			echo "Saliendo..."
+			break
+		;;
+		*)
+			echo "Opción incorrecta."
+		;;
+	esac
+done
+exit 0

@@ -14,10 +14,11 @@ agregar_elem () {
 		echo "Ingrese un parámetro:"
 		return 1;
 	fi
-	
+
 	#para la asignación copiamos todo el arreglo al a uno nuevo y le agregamos el elemento
-	arreglo=(${arreglo[*]} $1)
+	arreglo=(${arreglo[@]} $1)	# <=> arreglo+=($1)
 	echo "Elemento $1 agregado."
+	return 0
 }
 
 #eliminar_elem <parametro1>: Elimina del arreglo el elemento que se encuentra
@@ -27,27 +28,30 @@ eliminar_elem () {
 		echo "Ingrese un parámetro:"
 		return 1
 	fi
-	
+
 	if [ $1 -ge ${#arreglo[*]} ]; then
 		echo "Posición inválida."
 		return 2
 	fi
-	
+
 	unset arreglo[$1];
 	#hacemos la asignación de la impresión del arreglo para arreglar el problema
 	#de la posicion vacía.
-	arreglo=(${arreglo[*]})
+	arreglo=(${arreglo[@]})
 	echo "Elemento $1 eliminado."
-} 
+	return 0
+}
 
 #longitud: Imprime la longitud del arreglo en pantalla
 longitud () {
-	echo ${#arreglo[*]}
+	echo ${#arreglo[@]}
+	return 0
 }
 
 #imprimir: Imprmime todos los elementos del arreglo
 imprimir () {
-	echo ${arreglo[*]}
+	echo ${arreglo[@]}
+	return 0
 }
 
 #inicializar_con_valores <parámetro1> <parámetro2>: Crea un arreglo con longitud
@@ -56,13 +60,13 @@ inicializar_con_valores () {
 	if [ $# -ne 2 ]; then
 		echo "Cantidad incorrecta de parámetros.";
 		return 1;
-		
+
 	else
-		iniciar 
+		iniciar
 		for ((i=0; i < $1; i++)); do
 			agregar_elem $2
 		done
-		echo "Arreglo inicializado con $1 veces el valor $2."		
+		echo "Arreglo inicializado con $1 veces el valor $2."
 	fi
 	return 0
 }
@@ -99,7 +103,8 @@ select action in iniciar agregar_elem eliminar_elem longitud imprimir inicializa
 		;;
 		"Salir")
 			echo "Proceso finalizado."
-			exit 0
+			break
 		;;
 	esac
 done
+exit 0
