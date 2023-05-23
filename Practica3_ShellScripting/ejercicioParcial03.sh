@@ -1,101 +1,79 @@
 #!/bin/bash
-#Realice un script que implemente a través de la utilización de un arreglo las siguientes funciones: 
-arreglo=(7 "marco" polo)
 
-#No es necesario
-imprimir () {
-	if [ $# -ne 0 ]; then
-		"Parámetros incorrectos"
+arreglo=(Había "Había" 4 "es string" )
+
+#Imprimir todos los elementos del arreglo
+imprimir() {
+	j=0
+	for i in "${arreglo[@]}"; do
+		j=$((j + 1))
+		echo "elemento $j --> $i"
+	done
+	return 0
+}
+
+#Agregar "n" cantidad de elementos 
+agregarElementos() {
+	if [ $# -ne 1 ]; then
+		echo "Tiene que ingresar la cantidad de elementos."
 		return 1
+	fi
+
+	echo "Agregar elementos: "
+	local elemento=""
+	for ((i=0; i<$1; i++)); do
+		echo "Elemento $((i+1))"
+		read elemento
+		arreglo[${#arreglo[@]}]="$elemento"
+		#arreglo=(${arreglo[*]} "$elemento")
+	done
+	return 0
+}
+
+#Encontrar elemento en el arreglo
+encontrarElemento() {
+	if [ $# -ne 1 ]; then
+		echo "Parámetros incorrectos, se debe recibir un elemento"
+		return 1
+	fi
+	local elemento=""
+	for i in "${arreglo[@]}"; do
+		if [ "$1" = "$i" ]; then
+			elemento="$i"
+			break
+		fi
+	done
+	if [ -z "$elemento" ]; then
+		echo "El elemento "$1" proporcionado no se encontró."
 	else
-		echo "Contenido arreglo: ${arreglo[*]}"
-		echo "Cantidad de Elementos: ${#arreglo[*]}"
+		echo "El elemento "$1" se encontró en el arreglo."
 	fi
 	return 0
 }
 
-#La función recibe un parámetro (debe validar que así sea). Agrega al final del
-#arreglo el elemento recibido como parámetro.
-insertarElemento () {
-	if [ $# -ne 1 ]; then
-		echo "Parámetros incorrectos"
-		return 1
-	else
-		arreglo=(${arreglo[*]} $1)
-		imprimir
-	fi
-	return 0
-}
 
-#rellenar n: Itera n veces solicitando al usuario que ingrese un patrón de texto y 
-#lo agrega al final del arreglo. Debe validar que se reciba 1 parámetro.
-rellenar () {
-	if [ $# -ne 1 ]; then
-		echo "Parámetros incorrectos"
-		return 1
-		
-	else
-		echo "Ingrese patron de texto, $1 veces:"
-		for ((i = 0; i < $1; i++)); do
-			read texto
-			arreglo=(${arreglo[*]} $texto)
+opciones=("Encontrar elemento" "Agregar patrón de texto" "Imprimir elementos" "Salir")
+select opcion in "${opciones[@]}"; do
+	case "$opcion" in 
+		"Encontrar elemento")
+			echo -n "Ingresar elemento que desa buscar: "
+			read elemento
+			encontrarElemento "$elemento"
+		;;
+		"Agregar patrón de texto")
+			echo -n "Cantidad de elementos a agregar: "
+			read cant
+			agregarElementos "$cant"
+		;;
+		"Imprimir elementos")
 			imprimir
-		done
-	fi
-	return 0
-}
-
-#Recibe un parámetro, debe validar que así sea:
-#	Si el parámetro es *, entonces imprimirá todos los elementos del arreglo.
-#	Si el parámetro es distinto a *, deberá verificar si en el arreglo existe un
-#	elemento que sea igual al paránetro. Si existe deberá imprimirlo en pantalla, 
-#	caso contrario imprimiŕa "Elemento no encontrado".
-selectElemento () {
-	if [ $# -ne 1 ]; then
-		echo "Cantidad de parámetros incorrectos"
-		return 1
-	else
-		case $1 in
-			"*")
-				echo "Todos los elementos: "
-				imprimir
-			;;
-			*)
-				for ((i = 0; i < ${#arreglo[*]}; i++)); do
-					if [ $1 == "${arreglo[i]}" ]; then
-						echo "Se encontró parámetro: ${arreglo[i]}"
-						break
-					fi
-				done
-				if [ $1 != "${arreglo[i]}" ]; then
-					echo "No se encontró elemento"
-				fi
-			;;
-		esac
-	fi
-	return 0
-}
-
-echo "	MENU" 
-select option in "Insertar un elemento" "Agregar patron de texto" "Imprimir el/todos los elementos" "Tomarse el palo"; do
-	case $option in
-		"Insertar un elemento")
-			echo "Ingrese elemento a insertar en arreglo: "
-			read elemento
-			insertarElemento $elemento
 		;;
-		"Agregar patron de texto")
-			echo "Ingrese cantidad de veces a iterar: "
-			read cantidad
-			rellenar $cantidad
+		"Salir")
+			break
 		;;
-		"Imprimir el/todos los elementos")
-			echo "Ingrese elemento('*' muestra todos): "
-			read elemento
-			selectElemento  $elemento
-		;;
-		"Tomarse el palo")
-			exit 0
+		*)
+			echo "Opción incorrecta."
 		;;
 	esac
 done
+exit 0
